@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Image, StyleSheet } from "react-native";
+import { View, Text, Image, StyleSheet, Alert } from "react-native";
 
 export default function App() {
     const [image, setImage] = useState("");
@@ -12,13 +12,16 @@ export default function App() {
                     if (data.image) {
                         setImage(`data:image/jpeg;base64,${data.image}`);
                     }
+                    if (data.message) {
+                        Alert.alert("Result", data.message);
+                    }
                 })
                 .catch((error) => console.error("Error fetching image:", error));
         };
 
-       
+        // Fetch image every 3 seconds
         const interval = setInterval(fetchData, 3000);
-        return () => clearInterval(interval); 
+        return () => clearInterval(interval);
     }, []);
 
     return (

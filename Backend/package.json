@@ -13,8 +13,12 @@
   "description": "",
   "dependencies": {
     "body-parser": "^1.20.3",
+    "canvas": "^2.11.2",
     "cors": "^2.8.5",
-    "express": "^4.21.1"
+    "express": "^4.21.1",
+    "face-api.js": "^0.22.2",
+    "firebase": "^11.0.1",
+    "firebase-admin": "^12.7.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.7"

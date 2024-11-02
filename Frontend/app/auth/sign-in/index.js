@@ -39,6 +39,7 @@ export default function Index() {
         // Signed in
         const user = userCredential.user;
         console.log(user);
+        router.push("./../../(tabs)/faceRecog");
       })
       .catch((error) => {
         const errorCode = error.code;
