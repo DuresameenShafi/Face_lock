@@ -39,7 +39,7 @@ export default function Index() {
         // Signed in
         const user = userCredential.user;
         console.log(user);
-        router.push("./../../(tabs)/faceRecog");
+        // router.push("./../../(tabs)/faceRecog");
       })
       .catch((error) => {
         const errorCode = error.code;
@@ -65,7 +65,7 @@ export default function Index() {
             }}
             name="arrow-back"
             size={24}
-            color="black"
+            color={Colors.BLUE}
           />
         </TouchableOpacity>
         <Text
@@ -75,6 +75,7 @@ export default function Index() {
             textAlign: "center",
             marginRight:27,
             flex: 1, 
+            color:Colors.BLUE
           }}
         >
           Welcome back
@@ -86,6 +87,7 @@ export default function Index() {
           fontFamily: "outfit",
           fontSize: 14,
           textAlign: "center",
+          color:Colors.BLUE
         }}
       >
         Login to your account
@@ -113,7 +115,7 @@ export default function Index() {
             <Ionicons
               name={passwordVisible ? "eye" : "eye-off"}
               size={24}
-              color="gray"
+              color={Colors.BLUE}
             />
           </TouchableOpacity>
         </View>
@@ -128,7 +130,7 @@ export default function Index() {
           <Ionicons
             name={rememberPassword ? "checkbox-sharp" : "square-outline"}
             size={24}
-            color="black"
+            color={Colors.BLUE}
           />
           <Text style={styles.rememberText}>Remember Me</Text>
         </TouchableOpacity>
@@ -141,8 +143,9 @@ export default function Index() {
         style={{
           marginTop: 180,
           padding: 15,
-          backgroundColor: Colors.PRIMARY,
+          backgroundColor: Colors.BLUE,
           borderRadius: 99,
+
         }}
       >
         <Text
@@ -173,24 +176,27 @@ const styles = StyleSheet.create({
     padding: 10,
     borderWidth: 1,
     borderRadius: 30,
-    borderColor: Colors.PRIMARY,
+    borderColor: Colors.BLUE,
     fontFamily: "outfit",
     paddingLeft: 30,
+    // color:Colors.BLUE
   },
   passwordContainer: {
     flexDirection: "row",
     alignItems: "center",
     borderWidth: 1,
     borderRadius: 30,
-    borderColor: Colors.PRIMARY,
+    borderColor: Colors.BLUE,
     paddingHorizontal: 10,
     paddingRight: 30,
+   
   },
   passwordInput: {
     flex: 1,
     paddingVertical: 10,
     fontFamily: "outfit",
     paddingLeft: 20,
+    color:Colors.BLUE
   },
   rememberForgotContainer: {
     flexDirection: "row",
@@ -205,13 +211,13 @@ const styles = StyleSheet.create({
   rememberText: {
     fontFamily: "outfit",
     fontSize: 14,
-    color: Colors.GRAY,
+    color: Colors.BLUE,
     marginLeft: 8,
   },
   forgotText: {
     fontFamily: "outfit",
     fontSize: 15,
-    color: Colors.PRIMARY,
+    color: Colors.BLUE,
   },
   footerContainer: {
     flexDirection: "row",
@@ -224,7 +230,7 @@ const styles = StyleSheet.create({
     fontSize: 17,
   },
   signInText: {
-    color: Colors.PRIMARY,
+    color: Colors.BLUE,
     fontFamily: "outfit",
     fontSize: 17,
     marginLeft: 5,

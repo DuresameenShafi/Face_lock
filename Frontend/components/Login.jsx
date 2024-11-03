@@ -10,15 +10,13 @@ export default function Login() {
   return (
     <View>
       <Image
-        source={require("../assets/images/login.png")}
-        style={{ width: "100%", height: 460 }}
+        source={require("../assets/images/login.jpg")}
+        style={{ width: "100%", height: 500 }}
       />
       <View style={styles.container}>
-        <Text style={styles.title}>AI Travel Planner</Text>
+        <Text style={styles.title}>SECURE ACCESS</Text>
         <Text style={styles.subtitle}>
-          "Uncover your next journey with ease. Enjoy personalized itineraries
-          right at your fingertips and travel smarter with insights powered by
-          AI."
+       "Let your face do the unlocking—experience a new era of security with our smart facial recognition door access."
         </Text>
         <TouchableOpacity style={styles.button}
         onPress={()=>router.push('/auth/sign-in')}>
@@ -31,7 +29,7 @@ export default function Login() {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor:Colors.BLUE ,
+    backgroundColor:Colors.WHITE ,
     marginTop: -20,
     height: "100%",
     borderTopLeftRadius: 30,
@@ -43,7 +41,7 @@ const styles = StyleSheet.create({
     fontFamily: "outfit-bold",
     textAlign: "center",
     marginTop: 20,
-    color:Colors.WHITE
+    color:Colors.BLUE
   },
   subtitle: {
     fontFamily: "outfit",
@@ -54,9 +52,9 @@ const styles = StyleSheet.create({
   },
   button: {
     padding: 15,
-    backgroundColor: Colors.PRIMARY,
+    backgroundColor: Colors.BLUE,
     borderRadius: 99,
-    marginTop: "15%",
+    marginTop: "13%",
   },
   buttonText: {
     color: Colors.WHITE,

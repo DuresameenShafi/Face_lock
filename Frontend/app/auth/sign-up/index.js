@@ -63,7 +63,7 @@ export default function Index() {
             }}
             name="arrow-back"
             size={24}
-            color="black"
+            color={Colors.BLUE}
           />
         </TouchableOpacity>
         <Text
@@ -73,6 +73,7 @@ export default function Index() {
             textAlign: "center",
             flex: 1,
             marginRight:19,
+            color:Colors.BLUE
           }}
         >
           Let's get started!
@@ -83,6 +84,7 @@ export default function Index() {
           fontFamily: "outfit",
           fontSize: 14,
           textAlign: "center",
+          color:Colors.BLUE
         }}
       >
         Create your new account
@@ -117,7 +119,7 @@ export default function Index() {
             <Ionicons
               name={passwordVisible ? "eye" : "eye-off"}
               size={24}
-              color="gray"
+              color={Colors.BLUE}
             />
           </TouchableOpacity>
         </View>
@@ -128,7 +130,7 @@ export default function Index() {
         style={{
           marginTop: 145,
           padding: 15,
-          backgroundColor: Colors.PRIMARY,
+          backgroundColor: Colors.BLUE,
           borderRadius: 99,
         }}
       >
@@ -159,16 +161,17 @@ const styles = StyleSheet.create({
     padding: 10,
     borderWidth: 1,
     borderRadius: 30,
-    borderColor: Colors.PRIMARY,
+    borderColor: Colors.BLUE,
     fontFamily: "outfit",
     paddingLeft: 30,
+    
   },
   passwordContainer: {
     flexDirection: "row",
     alignItems: "center",
     borderWidth: 1,
     borderRadius: 30,
-    borderColor: Colors.PRIMARY,
+    borderColor: Colors.BLUE,
     paddingHorizontal: 10,
     paddingRight: 30,
   },
@@ -177,6 +180,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     fontFamily: "outfit",
     paddingLeft: 20,
+    color:Colors.BLUE
   },
   footerContainer: {
     flexDirection: "row",
@@ -189,7 +193,7 @@ const styles = StyleSheet.create({
     fontSize: 17,
   },
   signInText: {
-    color: Colors.PRIMARY,
+    color: Colors.BLUE,
     fontFamily: "outfit",
     fontSize: 17,
     marginLeft: 5,

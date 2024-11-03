@@ -12,6 +12,8 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@react-native-async-storage/async-storage": "^1.23.1",
+    "@tensorflow/tfjs-node": "^4.22.0",
     "body-parser": "^1.20.3",
     "canvas": "^2.11.2",
     "cors": "^2.8.5",
