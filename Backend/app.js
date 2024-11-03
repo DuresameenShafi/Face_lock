@@ -16,7 +16,7 @@ app.use(bodyParser.json());
 const serviceAccount = require("./SecretAccount.json");
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
-    storageBucket: "authenticatio0n.appspot.com"
+    storageBucket: ""
 });
 const bucket = admin.storage().bucket();
 
