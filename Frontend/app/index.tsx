@@ -9,6 +9,7 @@ export default function App() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       {user ? <Redirect href={'/faceRecog'}/> : <Login />}
+      
     </GestureHandlerRootView>
   );
 }

@@ -1,7 +1,5 @@
-import { View, Text } from "react-native";
-import React from "react";
 import { Tabs } from "expo-router";
-import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
+import Entypo from "@expo/vector-icons/Entypo";
 import { Colors } from "../../constants/Colors";
 
 export default function _layout() {
@@ -12,17 +10,33 @@ export default function _layout() {
         tabBarActiveTintColor: Colors.PRIMARY,
       }}
     >
+      {/* Home Tab */}
       <Tabs.Screen
-        name="faceRecong"
+        name="Home"
         options={{
-          tabBarLabel: "face",
+          tabBarLabel: "Home",
           tabBarIcon: ({ color }) => (
-
-            <FontAwesome6 name="face-grin" size={24} color={color}/>
+            <Entypo name="home" size={24} color={ Colors.BLUE} />
           ),
+          tabBarLabelStyle: {
+            color: Colors.BLUE,  // Change this to your desired color
+          },
         }}
       />
-   
+      
+      {/* History Tab */}
+      <Tabs.Screen
+        name="History"
+        options={{
+          tabBarLabel: "History",
+          tabBarIcon: ({ color }) => (
+            <Entypo name="back-in-time" size={24} color={Colors.BLUE} />
+          ),
+          tabBarLabelStyle: {
+            color: Colors.BLUE,  // Change this to your desired color
+          },
+        }}
+      />
     </Tabs>
   );
 }

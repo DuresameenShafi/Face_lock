@@ -39,7 +39,7 @@ export default function Index() {
         // Signed in
         const user = userCredential.user;
         console.log(user);
-         router.push("./../../(tabs)/faceRecog");
+        router.push("./../../(tabs)/faceRecog");  
       })
       .catch((error) => {
         const errorCode = error.code;
@@ -179,7 +179,7 @@ const styles = StyleSheet.create({
     borderColor: Colors.BLUE,
     fontFamily: "outfit",
     paddingLeft: 30,
-    // color:Colors.BLUE
+   
   },
   passwordContainer: {
     flexDirection: "row",
