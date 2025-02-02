@@ -1,17 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { getDatabase, ref, set, onValue, get } from "firebase/database";
-import {
-  View,
-  Text,
-  Button,
-  TouchableOpacity,
-  Image,
-  TextInput,
-  Modal,
-  ScrollView,
-} from "react-native";
 import * as faceapi from "face-api.js";
-import { storage, database } from "../../configs/FirebaseConfig";
+import { storage, database } from "./../../configs/FirebaseConfig";
 import {
   getDownloadURL,
   listAll,
@@ -20,7 +10,7 @@ import {
   ref as storageRef,
 } from "firebase/storage";
 import { FaClock } from "react-icons/fa";
-import { Colors } from "../../constants/Colors";
+import { Colors } from "./../../constants/Colors";
 import Entypo from "@expo/vector-icons/Entypo";
 const FaceComparison = () => {
   const [image1, setImage1] = useState(null);
@@ -45,6 +35,7 @@ const FaceComparison = () => {
   const [isTimerPopupVisible, setIsTimerPopupVisible] = useState(false);
   const [isDimmed, setIsDimmed] = useState(false);
   const [matches, setMatches] = useState([]);
+  // const [timeLimit, setTimeLimit] = useState(null);  // State for storing the time limit
 
   useEffect(() => {
     const loadModels = async () => {
@@ -54,6 +45,23 @@ const FaceComparison = () => {
     };
     loadModels();
   }, []);
+  const fetchESP32Image = async () => {
+    try {
+      const response = await fetch("https://face-lock-eucr.vercel.app/api/latest-image"); 
+      const data = await response.json();
+      if (data.image) {
+        setImage1(`data:image/jpeg;base64,${data.image}`); 
+        const byteCharacters = atob(data.image); 
+        const byteNumbers = Array.from(byteCharacters).map((char) => char.charCodeAt(0));
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob = new Blob([byteArray]);
+        setImageFile(blob); 
+        console.log("ESP32 Image fetched and set.");
+      }
+    } catch (error) {
+      console.error("Error fetching image from ESP32:", error);
+    }
+  };
 
   // const handleImageUpload = (e) => {
   //   const file = e.target.files[0];
@@ -171,7 +179,8 @@ const FaceComparison = () => {
           );
           setDecisionMessage("Allowed");
 
-          await fetch("http://192.168.0.102:5000/api/face-match", {
+         
+          await fetch("https://face-lock-eucr.vercel.app/api/face-match", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -236,7 +245,7 @@ const FaceComparison = () => {
               },
             ]);
 
-            await fetch("http://192.168.0.102:5000/api/face-match", {
+            await fetch("https://face-lock-eucr.vercel.app/api/face-match", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
@@ -245,7 +254,7 @@ const FaceComparison = () => {
               }),
             });
             await saveMatchToDatabase({
-              matchedImageName: firebaseImage.name.split(".")[0],
+              matchedImageName:  firebaseImage.name.split(".")[0],
               decisionMessage: "Allowed",
               popupReason: null,
               decisionTime: null,
@@ -266,7 +275,7 @@ const FaceComparison = () => {
         setPopupHeading("Random Person");
         setShowPopup(true);
         setPopupReason("Random Person");
-        await fetch("http://192.168.0.102:5000/api/face-match", {
+        await fetch("https://face-lock-eucr.vercel.app/api/face-match", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -329,7 +338,7 @@ const FaceComparison = () => {
       });
     }
 
-    await fetch("http://192.168.0.102:5000/api/face-match-decision", {
+    await fetch("https://face-lock-eucr.vercel.app/api/face-match-decision", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ decision: response }),
@@ -348,8 +357,8 @@ const FaceComparison = () => {
           const savedTimeLimit = snapshot.val();
           setTimeLimit(savedTimeLimit);
 
-          const [time, period] = savedTimeLimit.split(" ");
-          const [hour, minute] = time.split(":");
+          const [time, period] = savedTimeLimit.split(" "); 
+          const [hour, minute] = time.split(":"); 
           setSelectedHour(Number(hour));
           setSelectedMinute(Number(minute));
           setSelectedPeriod(period);
@@ -371,7 +380,6 @@ const FaceComparison = () => {
     const formattedTime = `${selectedHour}:${
       selectedMinute < 10 ? `0${selectedMinute}` : selectedMinute
     } ${selectedPeriod}`;
-
     setTimeLimit(formattedTime);
 
     const db = getDatabase();
@@ -390,143 +398,179 @@ const FaceComparison = () => {
     setIsTimerPopupVisible(false);
     setIsDimmed(false);
   };
+
   return (
-    <ScrollView
+    <div
       style={{
-        flex: 1,
-        padding: 20,
+        padding: "20px",
+        textAlign: "center",
         backgroundColor: Colors.WHITE,
-        paddingTop: 60,
+        paddingTop: "60px",
+        opacity: isDimmed ? 0.5 : 1,
+        overflowY: "auto", 
+        height: "100%",
+        scrollbarWidth: "none",
+        msOverflowStyle: "none", 
       }}
-      contentContainerStyle={{
-        alignItems: "center",
-      }}
+    
+     
     >
-      <Text
+      <h1
         style={{
-          fontSize: 24,
+          fontSize: "24px",
           fontFamily: "outfit-bold",
           color: Colors.BLUE,
+        marginTop:"10px",
+        marginLeft:"10px",
+
+       
         }}
       >
         CAMERA VIEW
-      </Text>
-      <View
+      </h1>
+      <div style={{marginLeft:"630px"}}>
+        <label>
+          
+          <input type="file" accept="image/*" onChange={handleImageUpload} />
+        </label>
+      </div>
+      <div
         style={{
-          padding: 5,
+          marginLeft:"200px",
+          padding: "5px",
+          display: "flex",
+          justifyContent: "center",
           alignItems: "center",
-          marginTop: 30,
+          marginTop: "10px",
           backgroundColor: Colors.WHITE,
-          width: 230,
-          height: 160,
-          borderRadius: 10,
-          shadowColor: Colors.BLUE,
-          shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: 0.3,
-          shadowRadius: 14,
+          width: "230px",
+          height: "160px",
+          borderRadius: "10px",
+          boxShadow: `0 2px 14px ${Colors.GRAY}`,
           elevation: 5,
         }}
       >
         {image1 && (
-          <Image
-            source={{ uri: image1 }}
-            style={{ width: 220, height: 150, borderRadius: 10 }}
+          <img
+            src={image1}
+            alt="Captured"
+            style={{ width: "220px", height: "150px", borderRadius: "10px" }}
           />
         )}
-      </View>
+      </div>
 
-      <View style={{ marginVertical: 30 }}>
-        <TouchableOpacity
-          onPress={toggleTimerPopup}
-          style={{ flexDirection: "row", alignItems: "center" }}
+      <div style={{ marginVertical: "30px" }}>
+        <button
+          onClick={toggleTimerPopup}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            marginLeft: "auto",
+            marginRight: "auto",
+            border: "none",
+            background: "transparent",
+            cursor: "pointer",
+          }}
         >
-          <FaClock
-            style={{ fontSize: 24, marginLeft: 177, color: Colors.GRAY }}
-          />
-          <Text style={{ color: Colors.GRAY, marginLeft: 10 }}>
+          <FaClock style={{ fontSize: "24px", color: Colors.GRAY, marginTop: "20px",marginLeft: "190px"}} />
+          <span style={{ color: Colors.GRAY, marginLeft: "10px", marginTop: "20px", }}>
             Set Time Limit
-          </Text>
-        </TouchableOpacity>
+          </span>
+        </button>
 
         {isTimerPopupVisible && (
-          <View style={timerPopupStyles}>
+          <div
+            style={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              padding: "20px",
+              backgroundColor: Colors.GRAY,
+              borderRadius: "10px",
+              boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
+          >
             <Entypo
               name="cross"
               size={30}
               color="#fff"
-              onPress={() => setIsTimerPopupVisible(false)}
-              style={styles.crossIcon}
+              onClick={() => setIsTimerPopupVisible(false)}
+              style={{
+                position: "absolute",
+                top: "10px",
+                right: "10px",
+                zIndex: 1,
+                cursor: "pointer",
+              }}
             />
-            <View
-              style={{ flexDirection: "row", alignItems: "center", padding: 0 }}
+            <div
+              style={{ display: "flex", alignItems: "center", padding: "0" }}
             >
-              <TextInput
+              <input
                 value={selectedHour.toString()}
-                onChangeText={(text) => setSelectedHour(Number(text))}
-                keyboardType="numeric"
+                onChange={(e) => setSelectedHour(Number(e.target.value))}
+                type="number"
                 style={inputStyle}
               />
-              <Text style={{ color: Colors.WHITE, marginTop: 18 }}>:</Text>
-              <TextInput
+              <span style={{ color: Colors.WHITE, marginTop: "18px" }}>: </span>
+              <input
                 value={selectedMinute.toString()}
-                onChangeText={(text) => setSelectedMinute(Number(text))}
-                keyboardType="numeric"
+                onChange={(e) => setSelectedMinute(Number(e.target.value))}
+                type="number"
                 style={inputStyle}
               />
-              <Text> </Text>
-              <TextInput
+              <input
                 value={selectedPeriod}
-                onChangeText={setSelectedPeriod}
+                onChange={(e) => setSelectedPeriod(e.target.value)}
                 style={inputStyle}
               />
-            </View>
-            <View style={{ marginTop: 20 }}>
-              <TouchableOpacity
-                onPress={handleSetTimeLimit}
+            </div>
+            <div style={{ marginTop: "20px" }}>
+              <button
+                onClick={handleSetTimeLimit}
                 style={{
                   backgroundColor: Colors.BLUE,
-                  paddingVertical: 10,
-                  paddingHorizontal: 20,
-                  borderRadius: 10,
-                  alignItems: "center",
+                  paddingVertical: "10px",
+                  paddingHorizontal: "20px",
+                  borderRadius: "10px",
+                  color: "white",
+                  fontFamily: "outfit",
+                  fontSize: "16px",
+                  border: "none",
+                  cursor: "pointer",
                 }}
               >
-                <Text
-                  style={{
-                    color: "white",
-                    fontFamily: "outfit",
-                    fontSize: 16,
-                  }}
-                >
-                  Set Time Limit
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </View>
+                Set Time Limit
+              </button>
+            </div>
+          </div>
         )}
-      </View>
+      </div>
+
       {matches.map((item, index) => (
-        <View
+        <div
           key={index}
           style={{
-            marginTop: 50,
+            marginTop: "50px",
+            // height:"130px",
             backgroundColor: Colors.WHITE,
-            width: 320,
-            borderRadius: 8,
-            shadowColor: Colors.BLUE,
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.3,
-            shadowRadius: 14,
-            elevation: 5,
+            width: "320px",
+            borderRadius: "8px",
+            boxShadow: `0 2px 14px ${Colors.GRAY}`,
+        marginLeft:"160px"
           }}
         >
-          <View style={{ backgroundColor: "#f2f1ed", padding: 8 }}>
-            <Text
+          <div style={{ backgroundColor: "#f2f1ed", padding: "1px" , borderRadius:"8px"}}>
+            <p
               style={{
                 fontFamily: "outfit",
-                fontSize: 13,
-                marginLeft: 10,
-                marginRight: 19,
+                fontSize: "13px",
+                marginLeft: "10px",
+                marginRight: "19px",
                 color: Colors.GRAY,
               }}
             >
@@ -536,17 +580,19 @@ const FaceComparison = () => {
                 : item.comparisonTime
                 ? new Date(item.comparisonTime).toLocaleDateString()
                 : "N/A"}
-            </Text>
-          </View>
-          <View
+            </p>
+          </div>
+          <div
             style={{
-              flexDirection: "row",
+              display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
-              padding: 20,
+              padding: "0px",
+              paddingLeft:"20px",
+                paddingRight:"20px"
             }}
           >
-            <Text
+            <p
               style={{
                 fontFamily: "outfit-bold",
                 color: Colors.BLUE,
@@ -559,8 +605,8 @@ const FaceComparison = () => {
                 : item.popupReason === "Time Exceeded"
                 ? item.matchedImageName || "Unknown"
                 : "Unknown"}
-            </Text>
-            <Text
+            </p>
+            <p
               style={{
                 fontFamily: "outfit",
                 color: Colors.GRAY,
@@ -571,18 +617,18 @@ const FaceComparison = () => {
                 : item.comparisonTime
                 ? new Date(item.comparisonTime).toLocaleTimeString()
                 : "0:0"}
-            </Text>
-            <Text
+            </p>
+            <p
               style={{
                 fontFamily: "outfit-bold",
                 color:
                   item.popupReason === "Time Exceeded" && item.matchedImageName
                     ? item.decisionMessage === "Allowed"
-                      ? "purple" 
+                      ? "purple" // Green for ALLOW
                       : item.decisionMessage === "Declined" ||
                         item.decisionMessage === "DENY"
-                      ? "purple"
-                      : "#000" 
+                      ? "purple" // Red for DECLINE/DENY
+                      : "#000" // Default color (black)
                     : item.popupReason === "Random Person"
                     ? item.decisionMessage === "Allowed"
                       ? "#2e8c35"
@@ -591,98 +637,91 @@ const FaceComparison = () => {
                       ? "#e34b4b"
                       : "#000"
                     : item.matchedImageName
-                    ? "#2e8c35" 
-                    : "#000", 
+                    ? "#2e8c35" // Green for ALLOW if matchedImageName exists
+                    : "#000", // Default color (black for unknown)
               }}
             >
-              {item.popupReason === "Time Exceeded" && item.matchedImageName
-                ? item.decisionMessage
-                : item.popupReason === "Random Person"
-                ? item.decisionMessage
-                : item.matchedImageName
-                ? "Allowed"
-                : item.decisionMessage
-                ? item.decisionMessage
-                : "N/A"}
-            </Text>
-          </View>
-        </View>
+              {
+                item.popupReason === "Time Exceeded" && item.matchedImageName
+                  ? item.decisionMessage // Show matchedImageName if "Time Exceeded" and it exists
+                  : item.popupReason === "Random Person"
+                  ? item.decisionMessage // Show decisionMessage if "Random Person"
+                  : item.matchedImageName
+                  ? "Allowed" // Show "ALLOW" if matchedImageName exists
+                  : item.decisionMessage
+                  ? item.decisionMessage // Show decisionMessage if none of the above
+                  : "N/A" // Default case
+              }
+            </p>
+          </div>
+        </div>
       ))}
       {showPopup && (
-        <Modal transparent={true} animationType="fade" visible={showPopup}>
-          <View style={popupStyles}>
-            <Text style={{ fontSize: 18, fontWeight: "bold" }}>
-              {popupHeading}
-            </Text>
-
-            <Text>{popupReason}</Text>
-            <View style={buttonContainerStyle}>
-              <Button
-                title="Allow"
-                onPress={() => handlePopupResponse("allow")}
-              />
-              <Button
-                title="Decline"
-                onPress={() => handlePopupResponse("decline")}
-              />
-            </View>
-          </View>
-        </Modal>
+        <div
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            padding: "20px",
+            backgroundColor: "white",
+            borderRadius: "10px",
+            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+            zIndex: 1000,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <h2>{popupHeading}</h2>
+          {/* <p>{popupReason}</p> */}
+          <div
+            style={{
+              marginTop: "20px",
+              display: "flex",
+              gap: "10px",
+            }}
+          >
+            <button
+              onClick={() => handlePopupResponse("allow")}
+              style={{
+                backgroundColor: "#2e8c35",
+                padding: "10px 20px",
+                borderRadius: "5px",
+                color: "white",
+                border: "none",
+                cursor: "pointer",
+              }}
+            >
+              Allow
+            </button>
+            <button
+              onClick={() => handlePopupResponse("decline")}
+              style={{
+                backgroundColor: "#e34b4b",
+                padding: "10px 20px",
+                borderRadius: "5px",
+                color: "white",
+                border: "none",
+                cursor: "pointer",
+              }}
+            >
+              Decline
+            </button>
+          </div>
+        </div>
       )}
-    </ScrollView>
+    </div>
   );
 };
 
-const timerPopupStyles = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  padding: 20,
-  backgroundColor: Colors.GRAY,
-  borderRadius: 10,
-  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-};
-const styles = {
-  crossIcon: {
-    position: "absolute",
-    top: 10,
-    right: 10,
-    zIndex: 1,
-  },
-};
-const popupStyles = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  padding: 20,
-  backgroundColor: "white",
-  borderRadius: 10,
-  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-  zIndex: 1000,
-  alignItems: "center",
-};
-const buttonContainerStyle = {
-  marginTop: 20,
-  flexDirection: "row",
-  justifyContent: "center",
-  gap: 10,
-};
 const inputStyle = {
-  width: 50,
-  height: 40,
-  textAlign: "center",
-  borderWidth: 2,
-  borderColor: "#fff",
-  marginLeft: 5,
-  marginRight: 5,
-  marginTop: 27,
-  borderRadius: 5,
-  color: Colors.WHITE,
+  padding: "10px",
+  fontSize: "16px",
+  margin: "5px",
+  borderRadius: "8px",
+  border: `1px solid ${Colors.BLUE}`,
+  width: "50px",
 };
 
 export default FaceComparison;

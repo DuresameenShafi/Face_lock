@@ -9,6 +9,9 @@ app.use(bodyParser.json({ limit: "10mb" }));
 let face_matchResult = "";
 let latestImage = ""; 
 
+app.get("/", (req, res) => {
+   res.send("backend is running");
+});
 // Endpoint to receive image from ESP32-CAM
 app.post("/receive-image", (req, res) => {
     latestImage = req.body.image;
@@ -73,10 +76,23 @@ app.post("/api/face-match-decision", (req, res) => {
 // Endpoint to send the latest face_matchResult to ESP32
 app.get("/api/send-esp", (req, res) => {
     if (face_matchResult) {
-        res.json(face_matchResult);
+        res.json(face_matchResult); // Send the current result first
+        
+        if (face_matchResult.status === "allow") {
+            console.log("Sending 'allow' response to ESP...");
+            
+            // After 5 seconds, change the result to 'deny' and log the event
+            setTimeout(() => {
+                face_matchResult = {
+                    status: "deny",
+                    message: "Access denied after timeout."
+                };
+                console.log("Automatically sending 'deny' response after 5 seconds...");
+            }, 5000); // 5000ms = 5 seconds
+        }
     } else {
-        res.status(404).json({ error: "No face match result available" });
-    }
+        res.status(404).json({ error: "No face match result available" });
+    }
 });
 
 // Server setup
